@@ -112,6 +112,29 @@ Important connection tips:
 - If players are on different networks and it stays stuck, both players should use the same **TURN fallback** settings, click **Save Method**, then create a fresh invite and answer.
 - If **Network Debug** shows `relay=0` and the connection never links, the TURN server was not used or did not work.
 
+### Brave Browser Fix
+
+Brave can block or hide WebRTC network routes to protect privacy. When that happens, the game may create an invite or answer, but **Network Debug** shows `sdpCandidates=0` or all candidate counts stay at `0`.
+
+Fastest fix: ask the Brave player to try Chrome, Edge, or Firefox first. If the game links there, the problem is Brave privacy settings, not the game code.
+
+If your friend wants to stay on Brave:
+
+1. Open the game page in Brave.
+2. Click the Brave lion icon in the address bar.
+3. Turn **Shields** off for this site, or set fingerprinting protection to a less strict setting for this site.
+4. Open `brave://settings/privacy`.
+5. Find **WebRTC IP handling policy**.
+6. Do not use **Disable non-proxied UDP** for this game.
+7. Use **Default** or **Default public and private interfaces**.
+8. Close private/Tor windows, VPNs, or firewall privacy tools while testing.
+9. Reload both players' pages.
+10. Create a fresh invite and answer.
+
+Privacy tradeoff: allowing WebRTC routes can reveal network address information to the peer connection. For a game with a friend, that is normally acceptable; for maximum privacy, use **TURN relay only** with a trusted TURN server instead.
+
+If Brave still does not link after those settings, both players should choose **TURN relay only**, enter the same TURN server details, click **Save Method**, reload, and create a fresh invite and answer. If **Network Debug** still shows `relay=0`, the TURN URL, username, credential, or provider is not working from that browser/network.
+
 For a quick same-computer test, open [index.html](index.html) in two browser tabs and use the same host/join steps between the tabs.
 
 ## Game Rules

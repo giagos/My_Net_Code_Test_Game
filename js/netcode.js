@@ -756,7 +756,7 @@
 
     debugNetwork(
       "No ICE candidates",
-      label + " has zero candidates. With copy/paste signaling this cannot make a peer route; use a normal browser, disable VPN/firewall restrictions, or add a TURN server.",
+      label + " has zero candidates. With copy/paste signaling this cannot make a peer route; in Brave, lower Shields/WebRTC privacy for this site, disable VPN/firewall restrictions, or add a TURN server.",
       "bad"
     );
     app.ui.logEvent(label + " has no network candidates.", "bad");
