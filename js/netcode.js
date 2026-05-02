@@ -3,6 +3,7 @@
 
   var state = app.state;
   var acceptingAnswer = false;
+  var connectionWatchdogId = null;
   var debugEntryLimit = 160;
 
   async function createHostInvite() {
@@ -91,6 +92,7 @@
       // Setting the remote answer completes WebRTC negotiation on the host side.
       await pc.setRemoteDescription(payload.description);
       debugNetwork("SDP answer", "Remote answer set; signaling=" + pc.signalingState + ".", "good");
+      startConnectionWatchdog("Host accepted answer; waiting for peer route", pc);
       app.ui.logEvent("Answer accepted.", "good");
       app.ui.render();
     } catch (error) {
@@ -141,6 +143,7 @@
         description: pc.localDescription
       });
       debugNetwork("Answer code", "Ready; chars=" + app.dom.answerCode.value.length + ", " + summarizeSdp(pc.localDescription) + ".", "good");
+      startConnectionWatchdog("Guest answer ready; waiting for host and peer route", pc);
 
       state.connection.status = "answer-ready";
       app.ui.logEvent("Answer created.", "good");
@@ -187,6 +190,7 @@
       debugNetwork("Peer connection", "connectionState=" + status + ".", status === "connected" ? "good" : status === "failed" ? "bad" : "");
 
       if (status === "connected") {
+        clearConnectionWatchdog();
         state.connection.status = "connected";
       } else if (status === "connecting") {
         state.connection.status = "connecting";
@@ -218,6 +222,7 @@
     channel.addEventListener("open", function () {
       state.connection.status = "connected";
       state.connection.error = "";
+      clearConnectionWatchdog();
       debugNetwork("DataChannel", "Open; readyState=" + channel.readyState + ".", "good");
       sendMessage({ type: "hello", name: state.connection.localName, version: app.config.version });
       app.ui.logEvent("Encrypted peer link open.", "good");
@@ -471,6 +476,7 @@
 
   function resetNetwork(keepLog) {
     acceptingAnswer = false;
+    clearConnectionWatchdog();
 
     if (state.connection.channel) {
       try { state.connection.channel.close(); } catch (error) { }
@@ -639,6 +645,33 @@
 
   function channelState() {
     return state.connection.channel ? state.connection.channel.readyState : "none";
+  }
+
+  function startConnectionWatchdog(label, pc) {
+    clearConnectionWatchdog();
+
+    connectionWatchdogId = window.setTimeout(function () {
+      if (state.connection.pc !== pc || isChannelOpen()) {
+        return;
+      }
+
+      debugNetwork(
+        "Connection wait",
+        label + "; still not linked after 20s. connectionState=" + pc.connectionState + ", iceConnectionState=" + pc.iceConnectionState + ", signaling=" + pc.signalingState + ", " + formatCandidateCounts(pc) + ". If relay=0 and this is online, add TURN or try another network.",
+        "warn"
+      );
+      app.ui.logEvent("P2P link still waiting; check Network Debug.", "warn");
+      app.ui.render();
+    }, 20000);
+  }
+
+  function clearConnectionWatchdog() {
+    if (!connectionWatchdogId) {
+      return;
+    }
+
+    window.clearTimeout(connectionWatchdogId);
+    connectionWatchdogId = null;
   }
 
   function assertPayload(payload, expectedType) {
