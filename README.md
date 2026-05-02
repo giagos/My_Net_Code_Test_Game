@@ -16,6 +16,25 @@
 	<img src="assets/crown.svg" alt="Win" width="56">
 </p>
 
+## Play Online
+
+After GitHub Pages is enabled for this repository, the game can run directly from:
+
+<p align="center">
+	<a href="https://giagos.github.io/My_Net_Code_Test_Game/" target="_blank"><strong>Play Mine Roll Duel</strong></a>
+</p>
+
+GitHub README files cannot run the game by themselves. GitHub removes scripts from README content for security, so a README button can only link to the hosted page. GitHub Pages is the correct way to run these same static files from GitHub in a normal browser tab.
+
+To enable it:
+
+1. Push this repository to GitHub.
+2. Open the repository **Settings** tab.
+3. Go to **Pages**.
+4. Set **Source** to **GitHub Actions**.
+5. Push to `main` or run the **Deploy GitHub Pages** workflow manually.
+6. Open `https://giagos.github.io/My_Net_Code_Test_Game/`.
+
 ## Purpose
 
 Mine Roll Duel was created as a test project for experimenting with browser peer-to-peer netcode without a traditional hosted game server. It is made to be easy to download, inspect, run, and modify.
