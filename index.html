@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Mine Roll Duel is a local-file, peer-to-peer two player dice and mine grid game.">
+  <title>Mine Roll Duel</title>
+  <link rel="icon" href="./assets/mine.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <main class="shell">
+    <section class="game-surface" aria-label="Mine Roll Duel game">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <span class="brand-mark" aria-hidden="true"><img src="./assets/mine.svg" alt=""></span>
+          <div>
+            <h1>Mine Roll Duel</h1>
+            <p id="statusLine" aria-live="polite">Create a match or join one.</p>
+          </div>
+        </div>
+        <div class="status-rail" aria-label="Match status">
+          <span id="connectionPill" class="status-pill">Offline</span>
+          <span id="rolePill" class="status-pill muted">No role</span>
+          <span id="turnPill" class="status-pill accent">Standby</span>
+        </div>
+      </header>
+
+      <section class="play-layout">
+        <aside class="panel command-panel" aria-label="Turn controls">
+          <div class="name-row">
+            <label for="playerName">Name</label>
+            <input id="playerName" type="text" maxlength="18" autocomplete="nickname" value="Player">
+          </div>
+
+          <div class="players" aria-label="Players">
+            <div id="playerOne" class="player-strip">
+              <span class="player-token host-token"></span>
+              <div>
+                <strong id="playerOneName">Host</strong>
+                <span id="playerOneStatus">waiting</span>
+              </div>
+            </div>
+            <div id="playerTwo" class="player-strip">
+              <span class="player-token guest-token"></span>
+              <div>
+                <strong id="playerTwoName">Guest</strong>
+                <span id="playerTwoStatus">waiting</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="dice-box" aria-label="Dice roll">
+            <div id="diceFace" class="dice-face" aria-live="polite">?</div>
+            <button id="rollButton" class="primary-button" type="button" disabled>
+              <img src="./assets/dice.svg" alt="" aria-hidden="true">
+              <span>Roll d6</span>
+            </button>
+          </div>
+
+          <dl class="round-stats">
+            <div>
+              <dt>Opens</dt>
+              <dd id="opensRemaining">0</dd>
+            </div>
+            <div>
+              <dt>Bombs</dt>
+              <dd id="bombCount">-</dd>
+            </div>
+            <div>
+              <dt>Round</dt>
+              <dd id="roundNumber">0</dd>
+            </div>
+          </dl>
+        </aside>
+
+        <section class="board-stage" aria-label="Seven by seven mine grid">
+          <div id="board" class="board" role="grid" aria-label="Mine field"></div>
+          <div id="boardShade" class="board-shade">
+            <img src="./assets/shield.svg" alt="" aria-hidden="true">
+            <strong id="shadeTitle">Ready room</strong>
+            <span id="shadeText">Host or join to arm the field.</span>
+          </div>
+        </section>
+
+        <aside class="panel connect-panel" aria-label="Connection controls">
+          <div class="connect-tabs" role="tablist" aria-label="Connection role">
+            <button id="selectHost" class="tab-button active" type="button" role="tab" aria-selected="true">
+              <img src="./assets/link.svg" alt="" aria-hidden="true">
+              <span>Host</span>
+            </button>
+            <button id="selectJoin" class="tab-button" type="button" role="tab" aria-selected="false">
+              <img src="./assets/bolt.svg" alt="" aria-hidden="true">
+              <span>Join</span>
+            </button>
+          </div>
+
+          <div id="hostPane" class="connect-pane active" role="tabpanel" aria-label="Host controls">
+            <button id="hostButton" class="primary-button wide" type="button">
+              <img src="./assets/link.svg" alt="" aria-hidden="true">
+              <span>Create invite</span>
+            </button>
+            <label for="inviteCode">Invite code</label>
+            <textarea id="inviteCode" rows="5" readonly spellcheck="false"></textarea>
+            <button id="copyInviteButton" class="secondary-button" type="button" disabled>
+              <img src="./assets/copy.svg" alt="" aria-hidden="true">
+              <span>Copy invite</span>
+            </button>
+            <label for="hostAnswerCode">Answer code</label>
+            <textarea id="hostAnswerCode" rows="4" spellcheck="false"></textarea>
+            <button id="acceptAnswerButton" class="secondary-button" type="button" disabled>Connect</button>
+          </div>
+
+          <div id="joinPane" class="connect-pane" role="tabpanel" aria-label="Join controls">
+            <label for="joinInviteCode">Invite code</label>
+            <textarea id="joinInviteCode" rows="5" spellcheck="false"></textarea>
+            <button id="joinButton" class="primary-button wide" type="button">
+              <img src="./assets/bolt.svg" alt="" aria-hidden="true">
+              <span>Create answer</span>
+            </button>
+            <label for="answerCode">Answer code</label>
+            <textarea id="answerCode" rows="5" readonly spellcheck="false"></textarea>
+            <button id="copyAnswerButton" class="secondary-button" type="button" disabled>
+              <img src="./assets/copy.svg" alt="" aria-hidden="true">
+              <span>Copy answer</span>
+            </button>
+          </div>
+
+          <button id="startLocalButton" class="ghost-button" type="button">Local duel</button>
+
+          <div class="event-log" aria-label="Match log">
+            <h2>Log</h2>
+            <ol id="eventLog"></ol>
+          </div>
+        </aside>
+      </section>
+    </section>
+  </main>
+
+  <div id="resultOverlay" class="result-overlay" hidden>
+    <div class="result-panel" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+      <img id="resultIcon" src="./assets/crown.svg" alt="" aria-hidden="true">
+      <h2 id="resultTitle">Round over</h2>
+      <p id="resultBody">The field is quiet.</p>
+      <button id="continueButton" class="primary-button" type="button">Continue</button>
+    </div>
+  </div>
+</body>
+</html>
