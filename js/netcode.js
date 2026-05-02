@@ -584,7 +584,7 @@
     }
 
     if (!isTurnUrl(normalized.urls)) {
-      throw new Error("TURN URL must start with turn: or turns:.");
+      throw new Error("TURN URL must start with turn: or turns: and contain no spaces.");
     }
 
     window.localStorage.setItem(turnStorageKey, JSON.stringify(normalized));
@@ -627,8 +627,7 @@
   }
 
   function isTurnUrl(url) {
-    var lowerUrl = String(url || "").toLowerCase();
-    return lowerUrl.indexOf("turn:") === 0 || lowerUrl.indexOf("turns:") === 0;
+    return /^turns?:\S+$/i.test(String(url || ""));
   }
 
   function debugNetwork(topic, detail, tone) {

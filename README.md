@@ -18,30 +18,43 @@
 
 ## Play Online
 
-After GitHub Pages is enabled for this repository, the game can run directly from:
+When the GitHub Pages site is published, players can open the game here:
 
 <p align="center">
 	<a href="https://giagos.github.io/My_Net_Code_Test_Game/" target="_blank"><strong>Play Mine Roll Duel</strong></a>
 </p>
 
-GitHub README files cannot run the game by themselves. GitHub removes scripts from README content for security, so a README button can only link to the hosted page. GitHub Pages is the correct way to run these same static files from GitHub in a normal browser tab.
+If that link says **There isn't a GitHub Pages site here**, the game has not been published yet. That is not a player problem. The repository owner must enable GitHub Pages first, or players can use **Download And Open** below.
 
-To enable it:
+### Fix The GitHub Pages 404
 
-1. Push this repository to GitHub.
-2. Open the repository **Settings** tab.
-3. Go to **Pages**.
-4. Set **Source** to **GitHub Actions**.
-5. Push to `main` or run the **Deploy GitHub Pages** workflow manually.
-6. Open `https://giagos.github.io/My_Net_Code_Test_Game/`.
+Use the simple branch setup first. This project is a static site, so GitHub can publish it directly from the repository root.
 
-If GitHub shows **There isn't a GitHub Pages site here**, check these things:
+1. Commit and push the latest files to `main`.
 
-- The latest changes, including `.github/workflows/pages.yml`, have been pushed to GitHub.
-- Repository **Settings > Pages > Source** is set to **GitHub Actions**.
-- The **Deploy GitHub Pages** action has finished successfully.
-- The repository owner and name in the URL are exactly right: `https://giagos.github.io/My_Net_Code_Test_Game/`.
-- If the repository is private, your GitHub plan/settings must allow Pages for private repositories.
+	```bash
+	git add .
+	git commit -m "Publish Mine Roll Duel"
+	git push origin main
+	```
+
+2. On GitHub, open this repository.
+3. Go to **Settings** > **Pages**.
+4. Under **Build and deployment**, set **Source** to **Deploy from a branch**.
+5. Set **Branch** to `main` and the folder to `/ (root)`.
+6. Click **Save**.
+7. Wait until GitHub shows a green success message or **Your site is live at...**.
+8. Open `https://giagos.github.io/My_Net_Code_Test_Game/`.
+
+If it still shows 404 after a few minutes:
+
+- Check that the URL is exactly `https://giagos.github.io/My_Net_Code_Test_Game/`.
+- Check that [index.html](index.html) is in the repository root on GitHub.
+- Check that the repository is public, or that your GitHub plan allows Pages for private repositories.
+- Open the repository **Actions** tab and check for a failed Pages build.
+- If you choose **GitHub Actions** as the Pages source instead, run the **Deploy GitHub Pages** workflow and wait for a green check.
+
+GitHub README files cannot run the game by themselves. GitHub removes scripts from README content for security, so the README button can only link to the hosted page.
 
 ## Purpose
 
@@ -58,20 +71,48 @@ Created by **Giagkos Kapetankis**.
 
 No install, build command, local web server, LAN setup, or router port forwarding is required for the files themselves.
 
-## How To Test With Two People
+## How To Play With A Friend
 
-Both players need the same project files locally.
+Both players need to open the same version of the game in a modern browser. The easiest way is for both players to use the GitHub Pages link after it is live. If the Pages link is still 404, both players can download the ZIP and open [index.html](index.html) locally.
 
-1. Player 1 opens [index.html](index.html).
-2. Player 2 opens [index.html](index.html).
-3. Player 1 uses the **Host** tab and clicks **Create invite**.
-4. Player 1 sends the invite code to Player 2 using any chat app.
-5. Player 2 opens the **Join** tab, pastes the invite code, then clicks **Create answer**.
-6. Player 2 sends the answer code back to Player 1.
-7. Player 1 pastes the answer code and clicks **Connect**.
-8. When both screens show **P2P linked**, the match starts.
+You also need any chat app, voice call, or message window so the two players can send the invite and answer codes to each other.
 
-For a quick same-computer test, open [index.html](index.html) in two browser tabs and do the same host/join flow between the tabs.
+### Player 1: Host
+
+1. Open the game.
+2. Type your name if you want.
+3. Stay on the **Host** tab.
+4. Click **Create invite**.
+5. Click **Copy invite**.
+6. Send the invite code to your friend.
+
+### Player 2: Join
+
+1. Open the game.
+2. Click the **Join** tab.
+3. Paste the invite code from Player 1.
+4. Click **Create answer**.
+5. Click **Copy answer**.
+6. Send the answer code back to Player 1.
+
+### Player 1: Finish Connecting
+
+1. Paste the answer code into the **Answer code** box.
+2. Click **Connect**.
+3. Wait until both screens show **P2P linked**.
+4. The match starts automatically.
+
+After the match starts, the active player clicks **Roll d6**, then opens exactly that many closed tiles. If a bomb opens, that player loses the round. If all safe tiles are cleared, the active player wins.
+
+Important connection tips:
+
+- Send the whole invite or answer code. Do not edit it.
+- Use a fresh invite and answer after reloading the page or changing the connection method.
+- Try **STUN direct** first.
+- If players are on different networks and it stays stuck, both players should use the same **TURN fallback** settings, click **Save Method**, then create a fresh invite and answer.
+- If **Network Debug** shows `relay=0` and the connection never links, the TURN server was not used or did not work.
+
+For a quick same-computer test, open [index.html](index.html) in two browser tabs and use the same host/join steps between the tabs.
 
 ## Game Rules
 
@@ -118,11 +159,13 @@ In the game:
 
 1. Open **Connection Method**.
 2. Choose **STUN direct**, **TURN fallback**, or **TURN relay only**.
-3. For TURN modes, enter a server URL such as `turn:relay.example.com:3478` or `turns:relay.example.com:5349`.
+3. For TURN modes, enter a server URL such as `turn:relay.example.com:3478`, `turn:relay.example.com:3478?transport=udp`, `turn:relay.example.com:3478?transport=tcp`, or `turns:relay.example.com:5349`.
 4. Enter the TURN username and credential.
 5. Click **Save Method**.
 6. Create a fresh invite and answer.
 7. In **Network Debug**, look for `relay>0` or an `ICE server error`.
+
+The **Help** button in the method panel lists the accepted values. STUN direct locks the TURN fields because it does not use a URL, username, or credential. TURN modes require a URL beginning with `turn:` or `turns:` and no spaces; username and credential should match the exact values from the TURN provider.
 
 Method guide:
 

@@ -13,6 +13,7 @@
       "hostButton", "inviteCode", "copyInviteButton", "hostAnswerCode", "acceptAnswerButton",
       "joinInviteCode", "joinButton", "answerCode", "copyAnswerButton", "startLocalButton", "eventLog",
       "iceMethod", "turnUrl", "turnUsername", "turnCredential", "saveTurnButton", "clearTurnButton", "turnStatus",
+      "turnHelpButton", "turnHelp",
       "networkDebugLog", "copyDebugButton", "clearDebugButton", "resultOverlay", "resultIcon",
       "resultTitle", "resultBody", "continueButton"
     ];
@@ -38,6 +39,7 @@
     els.copyInviteButton.addEventListener("click", function () { handleCopy(els.inviteCode); });
     els.copyAnswerButton.addEventListener("click", function () { handleCopy(els.answerCode); });
     els.iceMethod.addEventListener("change", renderUnsavedTurnMethod);
+    els.turnHelpButton.addEventListener("click", toggleTurnHelp);
     els.saveTurnButton.addEventListener("click", saveTurnSettings);
     els.clearTurnButton.addEventListener("click", clearTurnSettings);
     els.copyDebugButton.addEventListener("click", copyNetworkDebug);
@@ -163,6 +165,7 @@
     els.turnUrl.value = settings.urls || "";
     els.turnUsername.value = settings.username || "";
     els.turnCredential.value = settings.credential || "";
+    setTurnFieldAvailability(els.iceMethod.value);
     renderTurnSettings();
   }
 
@@ -181,6 +184,7 @@
         els.turnCredential.value = "";
       }
 
+      setTurnFieldAvailability(els.iceMethod.value);
       logEvent(saved ? "Connection method saved." : "Using STUN direct.", saved ? "good" : "warn");
       renderTurnSettings();
     } catch (error) {
@@ -194,32 +198,45 @@
     els.turnUrl.value = "";
     els.turnUsername.value = "";
     els.turnCredential.value = "";
+    setTurnFieldAvailability("stun");
     logEvent("TURN relay cleared.", "warn");
     renderTurnSettings();
   }
 
   function renderTurnSettings() {
     var settings = app.netcode.loadTurnSettings();
+    var selectedMethod = els.iceMethod.value || settings.method || "stun";
 
-    if (settings.method === "relay") {
+    setTurnFieldAvailability(selectedMethod);
+
+    if (selectedMethod !== settings.method) {
+      renderUnsavedTurnMethod();
+      els.clearTurnButton.disabled = !settings.urls;
+      return;
+    }
+
+    if (selectedMethod === "stun") {
+      els.turnStatus.textContent = "Method: STUN direct. TURN fields are locked.";
+      els.clearTurnButton.disabled = !settings.urls;
+      return;
+    }
+
+    if (selectedMethod === "relay") {
       els.turnStatus.textContent = settings.urls ? "Method: TURN relay only via " + settings.urls : "Method: TURN relay only needs a server URL.";
       els.clearTurnButton.disabled = !settings.urls;
       return;
     }
 
-    if (settings.method === "turn") {
-      els.turnStatus.textContent = settings.urls ? "Method: TURN fallback via " + settings.urls : "Method: TURN fallback needs a server URL.";
-      els.clearTurnButton.disabled = false;
-      return;
-    }
-
-    els.turnStatus.textContent = "Method: STUN direct.";
+    els.turnStatus.textContent = settings.urls ? "Method: TURN fallback via " + settings.urls : "Method: TURN fallback needs a server URL.";
     els.clearTurnButton.disabled = !settings.urls;
   }
 
   function renderUnsavedTurnMethod() {
+    setTurnFieldAvailability(els.iceMethod.value);
+
     if (els.iceMethod.value === "stun") {
-      els.turnStatus.textContent = "Method: STUN direct.";
+      var settings = app.netcode.loadTurnSettings();
+      els.turnStatus.textContent = settings.urls ? "Method: STUN direct. TURN fields are locked. Save to clear TURN settings." : "Method: STUN direct. TURN fields are locked.";
       return;
     }
 
@@ -229,6 +246,23 @@
     }
 
     els.turnStatus.textContent = "Method: TURN fallback. Save before creating an invite or answer.";
+  }
+
+  function setTurnFieldAvailability(method) {
+    var usesTurnFields = method !== "stun";
+
+    els.turnUrl.disabled = !usesTurnFields;
+    els.turnUsername.disabled = !usesTurnFields;
+    els.turnCredential.disabled = !usesTurnFields;
+    els.turnUrl.required = usesTurnFields;
+  }
+
+  function toggleTurnHelp() {
+    var isHidden = els.turnHelp.hidden;
+
+    els.turnHelp.hidden = !isHidden;
+    els.turnHelpButton.setAttribute("aria-expanded", String(isHidden));
+    els.turnHelpButton.textContent = isHidden ? "Hide" : "Help";
   }
 
   function renderPlayers() {

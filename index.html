@@ -137,7 +137,10 @@
           <button id="startLocalButton" class="ghost-button" type="button">Local duel</button>
 
           <div class="turn-settings" aria-label="TURN relay settings">
-            <h2>Connection Method</h2>
+            <div class="turn-heading">
+              <h2>Connection Method</h2>
+              <button id="turnHelpButton" class="mini-button" type="button" aria-expanded="false" aria-controls="turnHelp">Help</button>
+            </div>
             <label for="iceMethod">Method</label>
             <select id="iceMethod">
               <option value="stun">STUN direct</option>
@@ -161,6 +164,17 @@
               <button id="clearTurnButton" class="mini-button" type="button">Clear</button>
             </div>
             <p id="turnStatus" class="turn-status">Method: STUN direct.</p>
+            <div id="turnHelp" class="turn-help" hidden>
+              <strong>Accepted values</strong>
+              <ul>
+                <li><b>STUN direct:</b> uses the built-in STUN servers. Leave URL, username, and credential empty.</li>
+                <li><b>TURN fallback:</b> needs a TURN URL. It tries direct routes first, then the relay.</li>
+                <li><b>TURN relay only:</b> needs a TURN URL. It forces all traffic through the relay.</li>
+                <li><b>URL:</b> must start with <code>turn:</code> or <code>turns:</code>, for example <code>turn:relay.example.com:3478</code>, <code>turn:relay.example.com:3478?transport=udp</code>, <code>turn:relay.example.com:3478?transport=tcp</code>, or <code>turns:relay.example.com:5349</code>.</li>
+                <li><b>Username:</b> paste the exact username from your TURN provider. Leave empty only if the provider says no username is required.</li>
+                <li><b>Credential:</b> paste the exact password, token, or secret from your TURN provider. Leave empty only if the provider says no credential is required.</li>
+              </ul>
+            </div>
           </div>
 
           <div class="event-log" aria-label="Match log">

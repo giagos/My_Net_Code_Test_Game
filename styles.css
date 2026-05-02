@@ -241,6 +241,13 @@ textarea:focus {
   box-shadow: 0 0 0 3px rgba(106, 199, 223, 0.14);
 }
 
+input:disabled,
+select:disabled,
+textarea:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
 .players {
   display: grid;
   gap: 9px;
@@ -612,6 +619,13 @@ textarea:focus {
   background: rgba(106, 199, 223, 0.045);
 }
 
+.turn-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
 .turn-settings h2 {
   color: var(--muted);
   font-size: 0.75rem;
@@ -642,6 +656,35 @@ textarea:focus {
   color: var(--muted);
   font-size: 0.76rem;
   line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.turn-help {
+  display: grid;
+  gap: 7px;
+  padding: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius);
+  background: rgba(0, 0, 0, 0.16);
+  color: var(--muted);
+  font-size: 0.74rem;
+  line-height: 1.35;
+}
+
+.turn-help[hidden] {
+  display: none;
+}
+
+.turn-help ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 16px;
+}
+
+.turn-help code {
+  color: var(--cyan);
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
   overflow-wrap: anywhere;
 }
 
