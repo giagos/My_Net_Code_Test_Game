@@ -136,6 +136,33 @@
 
           <button id="startLocalButton" class="ghost-button" type="button">Local duel</button>
 
+          <div class="turn-settings" aria-label="TURN relay settings">
+            <h2>Connection Method</h2>
+            <label for="iceMethod">Method</label>
+            <select id="iceMethod">
+              <option value="stun">STUN direct</option>
+              <option value="turn">TURN fallback</option>
+              <option value="relay">TURN relay only</option>
+            </select>
+            <label for="turnUrl">Server URL</label>
+            <input id="turnUrl" type="text" inputmode="url" autocomplete="off" placeholder="turn:relay.example.com:3478">
+            <div class="turn-grid">
+              <div>
+                <label for="turnUsername">Username</label>
+                <input id="turnUsername" type="text" autocomplete="off">
+              </div>
+              <div>
+                <label for="turnCredential">Credential</label>
+                <input id="turnCredential" type="password" autocomplete="off">
+              </div>
+            </div>
+            <div class="turn-actions">
+              <button id="saveTurnButton" class="secondary-button" type="button">Save Method</button>
+              <button id="clearTurnButton" class="mini-button" type="button">Clear</button>
+            </div>
+            <p id="turnStatus" class="turn-status">Method: STUN direct.</p>
+          </div>
+
           <div class="event-log" aria-label="Match log">
             <h2>Log</h2>
             <ol id="eventLog"></ol>

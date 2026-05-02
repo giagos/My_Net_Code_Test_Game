@@ -37,6 +37,7 @@ body {
 
 button,
 input,
+select,
 textarea {
   font: inherit;
 }
@@ -204,6 +205,7 @@ label,
 }
 
 input,
+select,
 textarea {
   width: 100%;
   color: var(--text);
@@ -218,6 +220,11 @@ input {
   padding: 9px 10px;
 }
 
+select {
+  min-height: 40px;
+  padding: 9px 10px;
+}
+
 textarea {
   min-height: 88px;
   resize: vertical;
@@ -228,6 +235,7 @@ textarea {
 }
 
 input:focus,
+select:focus,
 textarea:focus {
   border-color: var(--cyan);
   box-shadow: 0 0 0 3px rgba(106, 199, 223, 0.14);
@@ -595,6 +603,48 @@ textarea:focus {
   gap: 8px;
 }
 
+.turn-settings {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid rgba(106, 199, 223, 0.22);
+  border-radius: var(--radius);
+  background: rgba(106, 199, 223, 0.045);
+}
+
+.turn-settings h2 {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.turn-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.turn-grid > div {
+  min-width: 0;
+  display: grid;
+  gap: 7px;
+}
+
+.turn-actions {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+
+.turn-status {
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
 .network-debug {
   min-height: 0;
   display: grid;
@@ -770,6 +820,7 @@ textarea:focus {
   }
 
   .connect-tabs,
+  .turn-settings,
   .event-log,
   .network-debug,
   .ghost-button {
@@ -826,6 +877,11 @@ textarea:focus {
     width: 90px;
     height: 90px;
     font-size: 2.4rem;
+  }
+
+  .turn-grid,
+  .turn-actions {
+    grid-template-columns: 1fr;
   }
 }
 

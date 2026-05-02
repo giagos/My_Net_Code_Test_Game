@@ -5,6 +5,7 @@
   var acceptingAnswer = false;
   var connectionWatchdogId = null;
   var debugEntryLimit = 160;
+  var turnStorageKey = "MineRollDuel.turnSettings";
 
   async function createHostInvite() {
     try {
@@ -157,13 +158,20 @@
   }
 
   function createPeerConnection() {
-    var pc = new RTCPeerConnection({ iceServers: app.config.iceServers });
+    var iceConfig = getIceConfig();
+    var iceServers = iceConfig.iceServers;
+    var pc = new RTCPeerConnection({
+      iceServers: iceServers,
+      iceTransportPolicy: iceConfig.iceTransportPolicy
+    });
     pc._candidateCounts = { host: 0, srflx: 0, relay: 0, prflx: 0, unknown: 0 };
 
-    debugNetwork("RTCPeerConnection", "Created with ICE servers: " + describeIceServers() + ".");
+    debugNetwork("RTCPeerConnection", "Created with method=" + iceConfig.method + ", iceTransportPolicy=" + iceConfig.iceTransportPolicy + ", ICE servers: " + describeIceServers(iceServers) + ".");
 
-    if (!hasTurnServer()) {
+    if (!hasTurnServer(iceServers)) {
       debugNetwork("TURN relay", "No TURN server configured; strict NAT/firewalls may never link.", "warn");
+    } else {
+      debugNetwork("TURN relay", "TURN server configured; relay candidates should appear as relay>0 if reachable.", "good");
     }
 
     pc.addEventListener("signalingstatechange", function () {
@@ -519,6 +527,110 @@
     );
   }
 
+  function getIceConfig() {
+    var turnSettings = loadTurnSettings();
+    var hasTurn = turnSettings.method !== "stun" && Boolean(turnSettings.urls);
+    var iceServers = turnSettings.method === "relay" ? [] : app.config.iceServers.slice();
+
+    if (hasTurn) {
+      iceServers.push(createTurnServer(turnSettings));
+    }
+
+    return {
+      iceServers: iceServers,
+      iceTransportPolicy: turnSettings.method === "relay" ? "relay" : "all",
+      method: turnSettings.method
+    };
+  }
+
+  function loadTurnSettings() {
+    try {
+      var raw = window.localStorage.getItem(turnStorageKey);
+
+      if (!raw) {
+        return emptyTurnSettings();
+      }
+
+      return normalizeTurnSettings(JSON.parse(raw));
+    } catch (error) {
+      return emptyTurnSettings();
+    }
+  }
+
+  function createTurnServer(settings) {
+    var server = { urls: settings.urls };
+
+    if (settings.username) {
+      server.username = settings.username;
+    }
+
+    if (settings.credential) {
+      server.credential = settings.credential;
+    }
+
+    return server;
+  }
+
+  function saveTurnSettings(settings) {
+    var normalized = normalizeTurnSettings(settings);
+
+    if (normalized.method === "stun") {
+      clearTurnSettings();
+      return false;
+    }
+
+    if (!normalized.urls) {
+      throw new Error("TURN URL is required for that method.");
+    }
+
+    if (!isTurnUrl(normalized.urls)) {
+      throw new Error("TURN URL must start with turn: or turns:.");
+    }
+
+    window.localStorage.setItem(turnStorageKey, JSON.stringify(normalized));
+    debugNetwork("TURN settings", "Saved " + normalized.urls + ".", "good");
+    return true;
+  }
+
+  function clearTurnSettings() {
+    window.localStorage.removeItem(turnStorageKey);
+    debugNetwork("TURN settings", "Cleared TURN relay settings.", "warn");
+  }
+
+  function emptyTurnSettings() {
+    return { method: "stun", urls: "", username: "", credential: "" };
+  }
+
+  function normalizeTurnSettings(settings) {
+    var method = String(settings && settings.method || (settings && settings.urls ? "turn" : "stun")).trim().toLowerCase();
+
+    if (method !== "stun" && method !== "turn" && method !== "relay") {
+      method = "stun";
+    }
+
+    var normalized = {
+      method: method,
+      urls: String(settings && settings.urls || "").trim(),
+      username: String(settings && settings.username || "").trim(),
+      credential: String(settings && settings.credential || "")
+    };
+
+    if (!normalized.username) {
+      delete normalized.username;
+    }
+
+    if (!normalized.credential) {
+      delete normalized.credential;
+    }
+
+    return normalized;
+  }
+
+  function isTurnUrl(url) {
+    var lowerUrl = String(url || "").toLowerCase();
+    return lowerUrl.indexOf("turn:") === 0 || lowerUrl.indexOf("turns:") === 0;
+  }
+
   function debugNetwork(topic, detail, tone) {
     var time = new Date().toLocaleTimeString([], {
       hour12: false,
@@ -541,22 +653,22 @@
     }
   }
 
-  function describeIceServers() {
-    if (!app.config.iceServers.length) {
+  function describeIceServers(iceServers) {
+    if (!iceServers.length) {
       return "none";
     }
 
-    return app.config.iceServers.map(function (server) {
+    return iceServers.map(function (server) {
       var urls = Array.isArray(server.urls) ? server.urls : [server.urls];
       return urls.join(", ");
     }).join(" | ");
   }
 
-  function hasTurnServer() {
-    return app.config.iceServers.some(function (server) {
+  function hasTurnServer(iceServers) {
+    return iceServers.some(function (server) {
       var urls = Array.isArray(server.urls) ? server.urls : [server.urls];
       return urls.some(function (url) {
-        return String(url || "").toLowerCase().indexOf("turn:") === 0 || String(url || "").toLowerCase().indexOf("turns:") === 0;
+        return isTurnUrl(url);
       });
     });
   }
@@ -726,6 +838,9 @@
     sendMessage: sendMessage,
     resetNetwork: resetNetwork,
     isChannelOpen: isChannelOpen,
-    canAcceptAnswer: canAcceptAnswer
+    canAcceptAnswer: canAcceptAnswer,
+    loadTurnSettings: loadTurnSettings,
+    saveTurnSettings: saveTurnSettings,
+    clearTurnSettings: clearTurnSettings
   };
 })(window.MineRollDuel = window.MineRollDuel || {});

@@ -12,8 +12,9 @@
       "board", "boardShade", "shadeTitle", "shadeText", "selectHost", "selectJoin", "hostPane", "joinPane",
       "hostButton", "inviteCode", "copyInviteButton", "hostAnswerCode", "acceptAnswerButton",
       "joinInviteCode", "joinButton", "answerCode", "copyAnswerButton", "startLocalButton", "eventLog",
-      "networkDebugLog", "copyDebugButton", "clearDebugButton", "resultOverlay", "resultIcon", "resultTitle",
-      "resultBody", "continueButton"
+      "iceMethod", "turnUrl", "turnUsername", "turnCredential", "saveTurnButton", "clearTurnButton", "turnStatus",
+      "networkDebugLog", "copyDebugButton", "clearDebugButton", "resultOverlay", "resultIcon",
+      "resultTitle", "resultBody", "continueButton"
     ];
 
     ids.forEach(function (id) {
@@ -36,6 +37,9 @@
     els.joinButton.addEventListener("click", app.netcode.createJoinAnswer);
     els.copyInviteButton.addEventListener("click", function () { handleCopy(els.inviteCode); });
     els.copyAnswerButton.addEventListener("click", function () { handleCopy(els.answerCode); });
+    els.iceMethod.addEventListener("change", renderUnsavedTurnMethod);
+    els.saveTurnButton.addEventListener("click", saveTurnSettings);
+    els.clearTurnButton.addEventListener("click", clearTurnSettings);
     els.copyDebugButton.addEventListener("click", copyNetworkDebug);
     els.clearDebugButton.addEventListener("click", clearNetworkDebug);
     els.hostAnswerCode.addEventListener("input", render);
@@ -44,6 +48,7 @@
     els.rollButton.addEventListener("click", app.game.rollDie);
     els.board.addEventListener("click", app.game.handleBoardClick);
     els.continueButton.addEventListener("click", app.game.continueRound);
+    loadTurnSettings();
   }
 
   function selectPane(pane) {
@@ -65,6 +70,7 @@
   function render() {
     renderStatus();
     renderConnectionPane();
+    renderTurnSettings();
     renderPlayers();
     renderControls();
     renderBoard();
@@ -148,6 +154,81 @@
     els.copyInviteButton.disabled = !els.inviteCode.value;
     els.copyAnswerButton.disabled = !els.answerCode.value;
     els.acceptAnswerButton.disabled = !app.netcode.canAcceptAnswer() || !els.hostAnswerCode.value.trim();
+  }
+
+  function loadTurnSettings() {
+    var settings = app.netcode.loadTurnSettings();
+
+    els.iceMethod.value = settings.method || "stun";
+    els.turnUrl.value = settings.urls || "";
+    els.turnUsername.value = settings.username || "";
+    els.turnCredential.value = settings.credential || "";
+    renderTurnSettings();
+  }
+
+  function saveTurnSettings() {
+    try {
+      var saved = app.netcode.saveTurnSettings({
+        method: els.iceMethod.value,
+        urls: els.turnUrl.value,
+        username: els.turnUsername.value,
+        credential: els.turnCredential.value
+      });
+
+      if (!saved) {
+        els.turnUrl.value = "";
+        els.turnUsername.value = "";
+        els.turnCredential.value = "";
+      }
+
+      logEvent(saved ? "Connection method saved." : "Using STUN direct.", saved ? "good" : "warn");
+      renderTurnSettings();
+    } catch (error) {
+      logEvent(error && error.message ? error.message : "TURN relay not saved.", "bad");
+    }
+  }
+
+  function clearTurnSettings() {
+    app.netcode.clearTurnSettings();
+    els.iceMethod.value = "stun";
+    els.turnUrl.value = "";
+    els.turnUsername.value = "";
+    els.turnCredential.value = "";
+    logEvent("TURN relay cleared.", "warn");
+    renderTurnSettings();
+  }
+
+  function renderTurnSettings() {
+    var settings = app.netcode.loadTurnSettings();
+
+    if (settings.method === "relay") {
+      els.turnStatus.textContent = settings.urls ? "Method: TURN relay only via " + settings.urls : "Method: TURN relay only needs a server URL.";
+      els.clearTurnButton.disabled = !settings.urls;
+      return;
+    }
+
+    if (settings.method === "turn") {
+      els.turnStatus.textContent = settings.urls ? "Method: TURN fallback via " + settings.urls : "Method: TURN fallback needs a server URL.";
+      els.clearTurnButton.disabled = false;
+      return;
+    }
+
+    els.turnStatus.textContent = "Method: STUN direct.";
+    els.clearTurnButton.disabled = !settings.urls;
+  }
+
+  function renderUnsavedTurnMethod() {
+    if (els.iceMethod.value === "stun") {
+      els.turnStatus.textContent = "Method: STUN direct.";
+      return;
+    }
+
+    if (els.iceMethod.value === "relay") {
+      els.turnStatus.textContent = "Method: TURN relay only. Save before creating an invite or answer.";
+      return;
+    }
+
+    els.turnStatus.textContent = "Method: TURN fallback. Save before creating an invite or answer.";
   }
 
   function renderPlayers() {

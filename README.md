@@ -35,6 +35,14 @@ To enable it:
 5. Push to `main` or run the **Deploy GitHub Pages** workflow manually.
 6. Open `https://giagos.github.io/My_Net_Code_Test_Game/`.
 
+If GitHub shows **There isn't a GitHub Pages site here**, check these things:
+
+- The latest changes, including `.github/workflows/pages.yml`, have been pushed to GitHub.
+- Repository **Settings > Pages > Source** is set to **GitHub Actions**.
+- The **Deploy GitHub Pages** action has finished successfully.
+- The repository owner and name in the URL are exactly right: `https://giagos.github.io/My_Net_Code_Test_Game/`.
+- If the repository is private, your GitHub plan/settings must allow Pages for private repositories.
+
 ## Purpose
 
 Mine Roll Duel was created as a test project for experimenting with browser peer-to-peer netcode without a traditional hosted game server. It is made to be easy to download, inspect, run, and modify.
@@ -93,6 +101,41 @@ What happens under the hood:
 6. The verified shared seed generates the same bombs, same first player, and same dice rolls on both machines.
 
 The game uses public STUN servers so browsers can discover possible peer routes. STUN is not a game server and does not store match state. On very restrictive networks, browsers may require TURN relay infrastructure; that would be a server, so it is intentionally not included in this no-backend experiment.
+
+## Internet Play And TURN
+
+LAN play can work with direct local candidates. Internet play is less predictable because routers, mobile carrier NAT, VPNs, firewalls, and privacy settings can block direct WebRTC UDP routes.
+
+The **Network Debug** panel shows the important clue:
+
+- `host` candidates are local/private routes.
+- `srflx` candidates are public STUN-discovered routes.
+- `relay` candidates come from a TURN server.
+
+If internet play gets stuck with `relay=0`, add a TURN relay. Both players should choose the same connection method and enter the same TURN details before creating a fresh invite and answer.
+
+In the game:
+
+1. Open **Connection Method**.
+2. Choose **STUN direct**, **TURN fallback**, or **TURN relay only**.
+3. For TURN modes, enter a server URL such as `turn:relay.example.com:3478` or `turns:relay.example.com:5349`.
+4. Enter the TURN username and credential.
+5. Click **Save Method**.
+6. Create a fresh invite and answer.
+7. In **Network Debug**, look for `relay>0` or an `ICE server error`.
+
+Method guide:
+
+- **STUN direct**: no relay. Best for LAN and easy home networks.
+- **TURN fallback**: tries direct routes first, then a relay if needed. Best normal internet setting.
+- **TURN relay only**: forces all traffic through TURN. Best for testing if TURN works or for strict networks.
+
+Ways to get TURN credentials:
+
+- Use a hosted TURN provider such as Metered, Twilio, Xirsys, or similar.
+- Self-host `coturn` on a VPS with UDP/TCP port `3478`, and optionally TLS on `5349`.
+
+Do not put private TURN passwords directly into the source code for a public repository. The in-game TURN form stores them only in the current browser's local storage.
 
 ## Project Structure
 
