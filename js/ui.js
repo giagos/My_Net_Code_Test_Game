@@ -12,7 +12,8 @@
       "board", "boardShade", "shadeTitle", "shadeText", "selectHost", "selectJoin", "hostPane", "joinPane",
       "hostButton", "inviteCode", "copyInviteButton", "hostAnswerCode", "acceptAnswerButton",
       "joinInviteCode", "joinButton", "answerCode", "copyAnswerButton", "startLocalButton", "eventLog",
-      "resultOverlay", "resultIcon", "resultTitle", "resultBody", "continueButton"
+      "networkDebugLog", "copyDebugButton", "clearDebugButton", "resultOverlay", "resultIcon", "resultTitle",
+      "resultBody", "continueButton"
     ];
 
     ids.forEach(function (id) {
@@ -35,6 +36,8 @@
     els.joinButton.addEventListener("click", app.netcode.createJoinAnswer);
     els.copyInviteButton.addEventListener("click", function () { handleCopy(els.inviteCode); });
     els.copyAnswerButton.addEventListener("click", function () { handleCopy(els.answerCode); });
+    els.copyDebugButton.addEventListener("click", copyNetworkDebug);
+    els.clearDebugButton.addEventListener("click", clearNetworkDebug);
     els.hostAnswerCode.addEventListener("input", render);
     els.joinInviteCode.addEventListener("input", render);
     els.startLocalButton.addEventListener("click", app.game.startLocalDuel);
@@ -66,6 +69,7 @@
     renderControls();
     renderBoard();
     renderLog();
+    renderNetworkDebug();
     renderResult();
   }
 
@@ -321,6 +325,85 @@
     });
   }
 
+  function renderNetworkDebug() {
+    if (!els.networkDebugLog) {
+      return;
+    }
+
+    els.networkDebugLog.innerHTML = "";
+
+    if (!state.networkDebug.length) {
+      var emptyItem = document.createElement("li");
+      emptyItem.className = "empty";
+      emptyItem.textContent = "No network events yet.";
+      els.networkDebugLog.appendChild(emptyItem);
+    } else {
+      state.networkDebug.forEach(function (entry) {
+        var item = document.createElement("li");
+        item.className = entry.tone || "";
+        item.textContent = formatDebugEntry(entry);
+        els.networkDebugLog.appendChild(item);
+      });
+    }
+
+    els.copyDebugButton.disabled = !state.networkDebug.length;
+    els.clearDebugButton.disabled = !state.networkDebug.length;
+  }
+
+  function formatDebugEntry(entry) {
+    var pieces = ["[" + entry.time + "]", entry.role || "none", entry.topic];
+
+    if (entry.detail) {
+      pieces.push(entry.detail);
+    }
+
+    return pieces.join(" | ");
+  }
+
+  function formatNetworkDebug() {
+    return state.networkDebug.map(formatDebugEntry).join("\n");
+  }
+
+  async function copyNetworkDebug() {
+    var text = formatNetworkDebug();
+
+    if (!text) {
+      logEvent("Debug log is empty.", "warn");
+      return;
+    }
+
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        copyTextFallback(text);
+      }
+
+      logEvent("Debug copied.", "good");
+    } catch (error) {
+      logEvent("Could not copy debug.", "warn");
+    }
+  }
+
+  function copyTextFallback(text) {
+    var textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.left = "-9999px";
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textarea);
+  }
+
+  function clearNetworkDebug() {
+    state.networkDebug = [];
+    renderNetworkDebug();
+    logEvent("Debug cleared.", "warn");
+  }
+
   function renderResult() {
     var game = state.game;
 
@@ -401,6 +484,8 @@
     bindEvents: bindEvents,
     buildEmptyBoard: buildEmptyBoard,
     logEvent: logEvent,
+    renderNetworkDebug: renderNetworkDebug,
+    formatNetworkDebug: formatNetworkDebug,
     pulseDice: pulseDice,
     render: render
   };

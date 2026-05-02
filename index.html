@@ -140,6 +140,20 @@
             <h2>Log</h2>
             <ol id="eventLog"></ol>
           </div>
+
+          <div class="network-debug" aria-label="Network debug console">
+            <div class="debug-header">
+              <h2>Network Debug</h2>
+              <div class="debug-actions">
+                <button id="copyDebugButton" class="mini-button" type="button" disabled>
+                  <img src="./assets/copy.svg" alt="" aria-hidden="true">
+                  <span>Copy</span>
+                </button>
+                <button id="clearDebugButton" class="mini-button" type="button" disabled>Clear</button>
+              </div>
+            </div>
+            <ol id="networkDebugLog" aria-live="polite"></ol>
+          </div>
         </aside>
       </section>
     </section>

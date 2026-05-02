@@ -8,6 +8,7 @@
     selectedPane: "host",
     roundId: 0,
     log: [],
+    networkDebug: [],
     connection: {
       role: null,
       status: "idle",

@@ -595,9 +595,70 @@ textarea:focus {
   gap: 8px;
 }
 
+.network-debug {
+  min-height: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.debug-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.debug-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.mini-button {
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 8px;
+  border: 1px solid #46505b;
+  border-radius: var(--radius);
+  color: var(--muted);
+  background: #1b2026;
+  font-size: 0.72rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.mini-button img {
+  width: 14px;
+  height: 14px;
+}
+
+.mini-button:hover:not(:disabled) {
+  color: var(--text);
+  border-color: rgba(106, 199, 223, 0.7);
+}
+
+.mini-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
 .event-log ol {
   min-height: 120px;
   max-height: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  list-style: none;
+}
+
+.network-debug ol {
+  min-height: 170px;
+  max-height: 260px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -617,9 +678,25 @@ textarea:focus {
   line-height: 1.35;
 }
 
+.network-debug li {
+  padding: 8px 9px;
+  border-left: 3px solid rgba(106, 199, 223, 0.58);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--muted);
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: 0.68rem;
+  line-height: 1.38;
+  overflow-wrap: anywhere;
+}
+
 .event-log li.good { border-left-color: var(--green); }
 .event-log li.bad { border-left-color: var(--red); }
 .event-log li.warn { border-left-color: var(--gold); }
+.network-debug li.good { border-left-color: var(--green); }
+.network-debug li.bad { border-left-color: var(--red); }
+.network-debug li.warn { border-left-color: var(--gold); }
+.network-debug li.empty { border-left-color: rgba(170, 167, 157, 0.32); }
 
 .result-overlay {
   position: fixed;
@@ -694,6 +771,7 @@ textarea:focus {
 
   .connect-tabs,
   .event-log,
+  .network-debug,
   .ghost-button {
     grid-column: 1 / -1;
   }
