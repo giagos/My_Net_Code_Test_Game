@@ -143,7 +143,7 @@
     els.joinPane.classList.toggle("active", !hostActive);
     els.copyInviteButton.disabled = !els.inviteCode.value;
     els.copyAnswerButton.disabled = !els.answerCode.value;
-    els.acceptAnswerButton.disabled = !state.connection.pc || !els.hostAnswerCode.value.trim();
+    els.acceptAnswerButton.disabled = !app.netcode.canAcceptAnswer() || !els.hostAnswerCode.value.trim();
   }
 
   function renderPlayers() {

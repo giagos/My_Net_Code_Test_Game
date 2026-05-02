@@ -2,11 +2,14 @@
   "use strict";
 
   var state = app.state;
+  var acceptingAnswer = false;
 
   async function createHostInvite() {
     try {
       ensureWebRtcSupport();
       resetNetwork(false);
+      app.dom.inviteCode.value = "";
+      app.dom.hostAnswerCode.value = "";
       state.mode = "p2p";
       state.connection.role = "host";
       state.connection.status = "creating";
@@ -43,23 +46,45 @@
   }
 
   async function acceptAnswer() {
-    try {
-      var payload = app.utils.decodePayload(app.dom.hostAnswerCode.value);
-      assertPayload(payload, "answer");
+    if (acceptingAnswer) {
+      app.ui.logEvent("Answer is already being accepted.", "warn");
+      app.ui.render();
+      return;
+    }
 
-      if (!state.connection.pc) {
+    try {
+      var pc = state.connection.pc;
+
+      if (!pc) {
         throw new Error("Create an invite first.");
       }
 
+      if (pc.signalingState === "stable" && pc.remoteDescription) {
+        app.ui.logEvent("Answer already accepted.", "warn");
+        app.ui.render();
+        return;
+      }
+
+      if (pc.signalingState !== "have-local-offer") {
+        throw new Error("Create a fresh invite before accepting this answer.");
+      }
+
+      var payload = app.utils.decodePayload(app.dom.hostAnswerCode.value);
+      assertPayload(payload, "answer");
+
+      acceptingAnswer = true;
       state.connection.status = "connecting";
+      state.connection.error = "";
       app.ui.render();
 
       // Setting the remote answer completes WebRTC negotiation on the host side.
-      await state.connection.pc.setRemoteDescription(payload.description);
+      await pc.setRemoteDescription(payload.description);
       app.ui.logEvent("Answer accepted.", "good");
       app.ui.render();
     } catch (error) {
       showNetworkError(error);
+    } finally {
+      acceptingAnswer = false;
     }
   }
 
@@ -70,6 +95,7 @@
       assertPayload(offerPayload, "offer");
 
       resetNetwork(false);
+      app.dom.answerCode.value = "";
       state.mode = "p2p";
       state.connection.role = "guest";
       state.connection.status = "creating";
@@ -365,6 +391,8 @@
   }
 
   function resetNetwork(keepLog) {
+    acceptingAnswer = false;
+
     if (state.connection.channel) {
       try { state.connection.channel.close(); } catch (error) { }
     }
@@ -390,6 +418,14 @@
 
   function isChannelOpen() {
     return Boolean(state.connection.channel && state.connection.channel.readyState === "open");
+  }
+
+  function canAcceptAnswer() {
+    return Boolean(
+      state.connection.pc &&
+      !acceptingAnswer &&
+      state.connection.pc.signalingState === "have-local-offer"
+    );
   }
 
   function assertPayload(payload, expectedType) {
@@ -418,6 +454,7 @@
     startSeedExchange: startSeedExchange,
     sendMessage: sendMessage,
     resetNetwork: resetNetwork,
-    isChannelOpen: isChannelOpen
+    isChannelOpen: isChannelOpen,
+    canAcceptAnswer: canAcceptAnswer
   };
 })(window.MineRollDuel = window.MineRollDuel || {});
