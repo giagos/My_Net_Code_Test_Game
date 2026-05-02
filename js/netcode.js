@@ -44,6 +44,7 @@
         description: pc.localDescription
       });
       debugNetwork("Invite code", "Ready; chars=" + app.dom.inviteCode.value.length + ", " + summarizeSdp(pc.localDescription) + ".", "good");
+      warnIfNoCandidates(pc.localDescription, "Host invite");
 
       state.connection.status = "invite-ready";
       app.ui.logEvent("Invite created.", "good");
@@ -83,6 +84,7 @@
       var payload = app.utils.decodePayload(app.dom.hostAnswerCode.value);
       assertPayload(payload, "answer");
       debugNetwork("SDP answer", "Decoded answer; " + summarizeSdp(payload.description) + ".");
+      warnIfNoCandidates(payload.description, "Guest answer");
 
       acceptingAnswer = true;
       state.connection.status = "connecting";
@@ -143,6 +145,7 @@
         description: pc.localDescription
       });
       debugNetwork("Answer code", "Ready; chars=" + app.dom.answerCode.value.length + ", " + summarizeSdp(pc.localDescription) + ".", "good");
+      warnIfNoCandidates(pc.localDescription, "Guest answer");
       startConnectionWatchdog("Guest answer ready; waiting for host and peer route", pc);
 
       state.connection.status = "answer-ready";
@@ -623,8 +626,29 @@
       return "no SDP";
     }
 
-    var candidateCount = description.sdp.split("\na=candidate:").length - 1;
+    var candidateCount = countSdpCandidates(description);
     return "type=" + description.type + ", sdpChars=" + description.sdp.length + ", sdpCandidates=" + candidateCount;
+  }
+
+  function countSdpCandidates(description) {
+    if (!description || !description.sdp) {
+      return 0;
+    }
+
+    return description.sdp.split("\na=candidate:").length - 1;
+  }
+
+  function warnIfNoCandidates(description, label) {
+    if (countSdpCandidates(description) > 0) {
+      return;
+    }
+
+    debugNetwork(
+      "No ICE candidates",
+      label + " has zero candidates. With copy/paste signaling this cannot make a peer route; use a normal browser, disable VPN/firewall restrictions, or add a TURN server.",
+      "bad"
+    );
+    app.ui.logEvent(label + " has no network candidates.", "bad");
   }
 
   function summarizeMessage(message) {
