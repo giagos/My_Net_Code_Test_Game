@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 680" role="img" aria-label="Mine Roll Duel preview">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#101114"/>
+      <stop offset="0.48" stop-color="#20242a"/>
+      <stop offset="1" stop-color="#191b20"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#f2bc48"/>
+      <stop offset="1" stop-color="#c98223"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="680" rx="28" fill="url(#bg)"/>
+  <rect x="38" y="38" width="1124" height="604" rx="14" fill="#20242a" stroke="#3a414b" stroke-width="2"/>
+  <rect x="68" y="68" width="1064" height="76" rx="8" fill="#292d34" stroke="#3a414b"/>
+  <circle cx="108" cy="106" r="24" fill="#262218" stroke="#f5b83f"/>
+  <circle cx="108" cy="106" r="14" fill="#111318" stroke="#0b0d10" stroke-width="5"/>
+  <path fill="none" stroke="#20242b" stroke-width="4" stroke-linecap="round" d="M108 84v11M108 117v11M86 106h11M119 106h11"/>
+  <text x="146" y="101" fill="#f4f1e8" font-family="Segoe UI, Arial, sans-serif" font-size="27" font-weight="800">Mine Roll Duel</text>
+  <text x="146" y="124" fill="#aaa79d" font-family="Segoe UI, Arial, sans-serif" font-size="15">Peer-to-peer dice and mine grid netcode test</text>
+  <rect x="850" y="90" width="118" height="32" rx="16" fill="#13362c" stroke="#4ecb8f"/>
+  <text x="879" y="112" fill="#4ecb8f" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="800">P2P LINKED</text>
+  <rect x="982" y="90" width="104" height="32" rx="16" fill="#342714" stroke="#f5b83f"/>
+  <text x="1008" y="112" fill="#f5b83f" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="800">PLAYER TURN</text>
+
+  <rect x="68" y="172" width="245" height="430" rx="8" fill="#20242a" stroke="#3a414b"/>
+  <rect x="92" y="202" width="197" height="54" rx="8" fill="#30363e" stroke="#444b54"/>
+  <rect x="104" y="216" width="13" height="28" rx="7" fill="#f5b83f"/>
+  <text x="130" y="234" fill="#f4f1e8" font-family="Segoe UI, Arial, sans-serif" font-size="17" font-weight="800">Host</text>
+  <text x="130" y="249" fill="#aaa79d" font-family="Segoe UI, Arial, sans-serif" font-size="12">roll</text>
+  <rect x="92" y="272" width="197" height="54" rx="8" fill="#243b37" stroke="#4ecb8f"/>
+  <rect x="104" y="286" width="13" height="28" rx="7" fill="#6ac7df"/>
+  <text x="130" y="304" fill="#f4f1e8" font-family="Segoe UI, Arial, sans-serif" font-size="17" font-weight="800">Guest</text>
+  <text x="130" y="319" fill="#aaa79d" font-family="Segoe UI, Arial, sans-serif" font-size="12">waiting</text>
+  <rect x="108" y="362" width="96" height="96" rx="16" fill="#f7efe0" stroke="#ffe0a0" stroke-width="3"/>
+  <text x="142" y="426" fill="#15110a" font-family="Segoe UI, Arial, sans-serif" font-size="54" font-weight="900">4</text>
+  <rect x="92" y="484" width="197" height="44" rx="8" fill="url(#gold)" stroke="#ffd06d"/>
+  <text x="154" y="512" fill="#15110a" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="900">Roll d6</text>
+
+  <rect x="343" y="172" width="514" height="430" rx="8" fill="#20242a" stroke="#3a414b"/>
+  <g transform="translate(381 207)">
+    <g fill="#30363e" stroke="#444b54">
+      <rect x="0" y="0" width="44" height="44" rx="7"/><rect x="52" y="0" width="44" height="44" rx="7"/><rect x="104" y="0" width="44" height="44" rx="7"/><rect x="156" y="0" width="44" height="44" rx="7"/><rect x="208" y="0" width="44" height="44" rx="7"/><rect x="260" y="0" width="44" height="44" rx="7"/><rect x="312" y="0" width="44" height="44" rx="7"/>
+      <rect x="0" y="52" width="44" height="44" rx="7"/><rect x="52" y="52" width="44" height="44" rx="7"/><rect x="104" y="52" width="44" height="44" rx="7"/><rect x="156" y="52" width="44" height="44" rx="7"/><rect x="208" y="52" width="44" height="44" rx="7"/><rect x="260" y="52" width="44" height="44" rx="7"/><rect x="312" y="52" width="44" height="44" rx="7"/>
+      <rect x="0" y="104" width="44" height="44" rx="7"/><rect x="52" y="104" width="44" height="44" rx="7"/><rect x="104" y="104" width="44" height="44" rx="7"/><rect x="156" y="104" width="44" height="44" rx="7"/><rect x="208" y="104" width="44" height="44" rx="7"/><rect x="260" y="104" width="44" height="44" rx="7"/><rect x="312" y="104" width="44" height="44" rx="7"/>
+      <rect x="0" y="156" width="44" height="44" rx="7"/><rect x="52" y="156" width="44" height="44" rx="7"/><rect x="104" y="156" width="44" height="44" rx="7"/><rect x="156" y="156" width="44" height="44" rx="7"/><rect x="208" y="156" width="44" height="44" rx="7"/><rect x="260" y="156" width="44" height="44" rx="7"/><rect x="312" y="156" width="44" height="44" rx="7"/>
+      <rect x="0" y="208" width="44" height="44" rx="7"/><rect x="52" y="208" width="44" height="44" rx="7"/><rect x="104" y="208" width="44" height="44" rx="7"/><rect x="156" y="208" width="44" height="44" rx="7"/><rect x="208" y="208" width="44" height="44" rx="7"/><rect x="260" y="208" width="44" height="44" rx="7"/><rect x="312" y="208" width="44" height="44" rx="7"/>
+      <rect x="0" y="260" width="44" height="44" rx="7"/><rect x="52" y="260" width="44" height="44" rx="7"/><rect x="104" y="260" width="44" height="44" rx="7"/><rect x="156" y="260" width="44" height="44" rx="7"/><rect x="208" y="260" width="44" height="44" rx="7"/><rect x="260" y="260" width="44" height="44" rx="7"/><rect x="312" y="260" width="44" height="44" rx="7"/>
+      <rect x="0" y="312" width="44" height="44" rx="7"/><rect x="52" y="312" width="44" height="44" rx="7"/><rect x="104" y="312" width="44" height="44" rx="7"/><rect x="156" y="312" width="44" height="44" rx="7"/><rect x="208" y="312" width="44" height="44" rx="7"/><rect x="260" y="312" width="44" height="44" rx="7"/><rect x="312" y="312" width="44" height="44" rx="7"/>
+    </g>
+    <rect x="0" y="0" width="44" height="44" rx="7" fill="#e8ddc3" stroke="#c8b98f"/>
+    <rect x="52" y="0" width="44" height="44" rx="7" fill="#e8ddc3" stroke="#c8b98f"/>
+    <text x="67" y="31" fill="#2467a6" font-family="Segoe UI, Arial, sans-serif" font-size="25" font-weight="900">1</text>
+    <rect x="104" y="52" width="44" height="44" rx="7" fill="#3b1717" stroke="#ef5d5d"/>
+    <circle cx="126" cy="74" r="12" fill="#101114" stroke="#0b0d10" stroke-width="4"/>
+  </g>
+
+  <rect x="887" y="172" width="245" height="430" rx="8" fill="#20242a" stroke="#3a414b"/>
+  <rect x="912" y="202" width="195" height="42" rx="8" fill="#6ac7df"/>
+  <text x="972" y="229" fill="#0c0d10" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="900">Join</text>
+  <rect x="912" y="268" width="195" height="86" rx="8" fill="#15181d" stroke="#424a55"/>
+  <text x="930" y="294" fill="#aaa79d" font-family="Consolas, monospace" font-size="12">invite code...</text>
+  <rect x="912" y="374" width="195" height="42" rx="8" fill="url(#gold)" stroke="#ffd06d"/>
+  <text x="957" y="401" fill="#15110a" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="900">Create answer</text>
+  <rect x="912" y="451" width="195" height="100" rx="8" fill="#15181d" stroke="#424a55"/>
+  <text x="930" y="479" fill="#aaa79d" font-family="Consolas, monospace" font-size="12">match log</text>
+</svg>
